@@ -3,7 +3,16 @@
     <div class="col-6 offset-3 mt-4">
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading"><%= err.message %></h4>
+<<<<<<< HEAD
             <p><%= err.stack %></p>
         </div>
     </div>
 </div>
+=======
+            <% if(process.env.NODE_ENV!=="production"){ %>
+            <p><%= err.stack %></p>
+            <% } %>
+        </div>
+    </div>
+</div>
+>>>>>>> 493ed4f (changes before deploying)

@@ -6,7 +6,7 @@ const client = nodemailer.createTransport({
   secure: false,
   auth: {
     user: "apikey",
-    pass: sendgrid_key,
+    pass: process.env.sendGrid,
   },
 });
 const email = (module.exports.authMail = (mail_id, verify) =>

@@ -30,9 +30,9 @@ module.exports.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated() && req.user.isVerified) {
     return next();
   }
-  if (!req.user.isVerified) {
+  if (req.user && !req.user.isVerified) {
     req.flash("error", "Please verify for email first.");
-    return res.redirect("/users/login");
+    return res.redirect("/questions");
   }
   req.flash("error", "Please login to continue");
   res.redirect("/users/login");

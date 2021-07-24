@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+// mongodb+srv://admin:<password>@cluster0.tvqgg.mongodb.net/Cluster0?retryWrites=true&w=majority
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -18,13 +23,15 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const MongoStore = require("connect-mongo");
 const {
   validateAnswer,
   validateQuestion,
   isLoggedIn,
 } = require("./middleware");
-
-mongoose.connect("mongodb://localhost:27017/project", {
+const dbUrl = process.env.dbUrl || "mongodb://localhost:27017/project";
+// "mongodb://localhost:27017/project"
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -44,7 +51,15 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
-    secret: "...",
+    store: MongoStore.create({
+      mongoUrl: dbUrl,
+      touchAfter: 24 * 3600,
+      crypto: {
+        secret: process.env.secret,
+      },
+    }),
+    name: "llllppp",
+    secret: process.env.secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -89,7 +104,7 @@ app.use((err, req, res, next) => {
   //console.log(err.statusCode);
   res.status(err.statusCode).render("error", { err });
 });
-
-app.listen(3000, () => {
-  console.log("From port 3000");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`From port ${port}`);
 });
