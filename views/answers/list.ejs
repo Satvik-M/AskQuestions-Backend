@@ -4,20 +4,25 @@
         <small class="text-muted">Question</small>
         <div class="row">
             <div class="col-1">
-                <% if(user) {%>
-                <div class="col">
-                    <div class="row">
-                        <form action="/questions/<%= values._id %>/upvote" class="col ms-2">
-                            <button class="btn btn-sm"><i class="fas fa-angle-up"></i></button>
-                        </form>
+                <div class="row">
+                    <div class="col d-flex align-items-center">
+                        <div class="text-muted "><%=values.upvotes%></div>
                     </div>
-                    <div class="row">
-                        <form action="/questions/<%= values._id %>/downvote" class="col ms-2">
-                            <button class="btn btn-sm"><i class="fas fa-angle-down"></i></button>
-                        </form>
+                    <% if(user) {%>
+                    <div class="col">
+                        <div class="row">
+                            <form action="/questions/<%= values._id %>/upvote" class="col ms-2">
+                                <button class="btn btn-sm"><i class="fas fa-angle-up"></i></button>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <form action="/questions/<%= values._id %>/downvote" class="col ms-2">
+                                <button class="btn btn-sm"><i class="fas fa-angle-down"></i></button>
+                            </form>
+                        </div>
                     </div>
+                    <% } %>
                 </div>
-                <% } %>
             </div>
             <div class="col-10">
                 <h5 class="card-title"><%= values.title%></h5>
@@ -40,11 +45,6 @@
             </div>
         </div>
 
-
-        <div class="card-link col">
-
-        </div>
-
         <div class="card-text">
             </h5>
             <% if(values.answers.length==0) {%>
@@ -57,20 +57,27 @@
             <div class="card">
                 <div class="card-body row">
                     <div class="col-1">
-                        <% if(user) {%>
-                        <div class="col">
-                            <div class="row">
-                                <form action="/questions/<%= values._id %>/answers/<%= ans._id %>/upvote" class="col">
-                                    <button class="btn btn-sm"><i class="fas fa-angle-up"></i></button>
-                                </form>
+                        <div class="row">
+                            <div class="col d-flex align-items-center">
+                                <div class="text-muted m-auto"><%=ans.upvotes%></div>
                             </div>
-                            <div class="row">
-                                <form action="/questions/<%= values._id %>/answers/<%= ans._id %>/downvote" class="col">
-                                    <button class="btn btn-sm"><i class="fas fa-angle-down"></i></button>
-                                </form>
+                            <% if(user) {%>
+                            <div class="col">
+                                <div class="row">
+                                    <form action="/questions/<%= values._id %>/answers/<%= ans._id %>/upvote"
+                                        class="col">
+                                        <button class="btn btn-sm"><i class="fas fa-angle-up"></i></button>
+                                    </form>
+                                </div>
+                                <div class="row">
+                                    <form action="/questions/<%= values._id %>/answers/<%= ans._id %>/downvote"
+                                        class="col">
+                                        <button class="btn btn-sm"><i class="fas fa-angle-down"></i></button>
+                                    </form>
+                                </div>
                             </div>
+                            <% } %>
                         </div>
-                        <% } %>
                     </div>
                     <div class="card-text col-10">
                         <%= ans.answer %>

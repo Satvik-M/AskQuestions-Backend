@@ -87,10 +87,10 @@ router.get(
       if (vote.user.equals(req.user._id)) {
         check = false;
         if (vote.value == -1) {
-          ans.upvotes += 2;
+          ques.upvotes += 2;
           vote.value = 1;
           vote.save();
-          ans.save();
+          ques.save();
         }
       }
     }
@@ -119,10 +119,10 @@ router.get(
       if (vote.user.equals(req.user._id)) {
         check = false;
         if (vote.value == 1) {
-          ans.upvotes -= 2;
+          ques.upvotes -= 2;
           vote.value = -1;
           vote.save();
-          ans.save();
+          ques.save();
         }
       }
     }

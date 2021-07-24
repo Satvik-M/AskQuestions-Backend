@@ -59,7 +59,7 @@ app.use(
       },
     }),
     name: "llllppp",
-    secret: process.env.secret,
+    secret: "aaaa",
     resave: false,
     saveUninitialized: true,
     cookie: {
