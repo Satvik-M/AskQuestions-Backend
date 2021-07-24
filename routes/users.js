@@ -49,7 +49,7 @@ router.post(
       const link = new UserVerification({ user: user._id, time: Date.now() });
       await link.save();
       // change the link to your own after hosting the site
-      const verify = `http://localhost:3000/users/activate/${link._id}`;
+      const verify = `https://aqueous-lake-75452.herokuapp.com/users/activate/${link._id}`;
       authMail(email, verify);
       console.log(regUser);
       req.flash(
