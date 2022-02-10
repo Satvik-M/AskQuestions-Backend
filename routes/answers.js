@@ -104,16 +104,16 @@ router.delete(
 
 router.put(
   "/:a_id",
-  isLoggedIn,
-  isAnswerAuthor,
+  // isLoggedIn,
+  // isAnswerAuthor,
   catchAsync(async (req, res) => {
     const { id, a_id } = req.params;
     const ans = await Answer.findByIdAndUpdate(req.params.a_id, {
-      answer: req.body.answer,
+      answer: req.body.answer.answer,
     });
     req.flash("success", "Modified answer successfully");
-    // res.send(req.body);
-    res.redirect(`/questions/${id}/answers`);
+    res.json({ answer: ans });
+    // res.redirect(`/questions/${id}/answers`);
   })
 );
 

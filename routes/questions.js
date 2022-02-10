@@ -65,21 +65,22 @@ router.get(
 );
 router.put(
   "/:id",
-  isLoggedIn,
-  (g = isQuestionAuthor),
-  validateQuestion,
+  // isLoggedIn,
+  //  isQuestionAuthor,
+  // validateQuestion,
   catchAsync(async (req, res) => {
     // console.log(req.body);
     const ques = await Question.findByIdAndUpdate(req.params.id, {
-      title: req.body.title,
-      description: req.body.description,
+      description: req.body.question.description,
     });
     if (!ques) {
-      req.flash("error", "Question not found");
-      res.redirect("/questions");
+      // req.flash("error", "Question not found");
+      // res.redirect("/questions");
+      res.status(500).json({ message: "Question not found" });
     }
-    req.flash("success", "Modified the question successfully");
-    res.redirect("/questions");
+    // req.flash("success", "Modified the question successfully");
+    // res.redirect("/questions");
+    res.json({ question: ques });
   })
 );
 
