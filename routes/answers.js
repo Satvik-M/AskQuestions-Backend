@@ -20,11 +20,12 @@ router.get(
       options: { sort: { upvotes: -1 } },
     });
     // console.log(values);
-    if (!values) {
-      req.flash("error", "Question not found");
-      res.redirect("/questions");
-    }
-    res.render("answers/list", { values });
+    // if (!values) {
+    //   req.flash("error", "Question not found");
+    //   res.redirect("/questions");
+    // }
+    // res.render("answers/list", { values });
+    res.json(values);
   })
 );
 

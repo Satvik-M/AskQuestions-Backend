@@ -14,7 +14,14 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  password: {
+    type: String,
+    required: true,
+  },
+  username: {
+    type: String,
+    required: true,
+  },
 });
 
-UserSchema.plugin(passportLocalMongoose);
 module.exports = mongoose.model("User", UserSchema);

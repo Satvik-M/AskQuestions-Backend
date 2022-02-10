@@ -11,18 +11,34 @@ const {
   isLoggedIn,
   isQuestionAuthor,
 } = require("../middleware");
+const question = require("../models/question");
 
-router.get("/new", isLoggedIn, (req, res) => {
-  res.render("questions/home");
-});
+router.get(
+  "/new",
+  // isLoggedIn,
+  (req, res) => {
+    res.render("questions/home");
+  }
+);
+
+router.get(
+  "/:id",
+  catchAsync(async (req, res) => {
+    const question = await Question.findById(req.params.id);
+    res.json(question);
+  })
+);
+
 router.get(
   "/",
   catchAsync(async (req, res) => {
     const questions = await Question.find().sort({ upvotes: -1 });
-    res.render("questions/list", { questions });
+    // res.render("questions/list", { questions });
+    res.json(questions);
   })
 );
-router.post("/", isLoggedIn, validateQuestion, async (req, res) => {
+// router.post("/", isLoggedIn, validateQuestion, async (req, res) => {
+router.post("/", validateQuestion, async (req, res) => {
   const ques = new Question({
     title: req.body.title,
     description: req.body.description,
@@ -30,9 +46,8 @@ router.post("/", isLoggedIn, validateQuestion, async (req, res) => {
     votes: [],
   });
   ques.author = req.user;
-  //console.log(req.body.question);
+  question.author = null;
   await ques.save();
-  // console.log(ques);
   req.flash("success", "Question has been posted successfully");
   res.redirect("/questions");
 });
