@@ -15,67 +15,82 @@ const User = require("../models/users");
 
 router.get(
   "/answers/:a_id/upvote",
-  isLoggedIn,
+  // isLoggedIn,
   catchAsync(async (req, res) => {
+    let user;
+    const token = req.query.token;
+    jwt.verify(token, "secret", async (err, decoded) => {
+      if (!err) {
+        user = decoded;
+      } else {
+        console.log(err);
+      }
+    });
+    if (!user) res.status(400).json("No user");
     const ans = await Answer.findById(req.params.a_id);
     let check = true;
     for (vote of ans.votes) {
       console.log(vote);
-      if (vote.user.equals(req.user._id)) {
+      if (vote.user == user.userid) {
         check = false;
-        if (vote.value == -1) {
+        if (vote.value === -1) {
+          console.log("same person");
           ans.upvotes += 2;
           vote.value = 1;
-          vote.save();
-          ans.save();
         }
       }
     }
     console.log(ans.votes);
     if (check) {
+      console.log("new vote");
       ans.upvotes = ans.upvotes + 1;
       ans.votes.push({
-        user: req.user._id,
-        value: 1,
+        user: user.userid,
+        value: +1,
       });
-      ans.save();
-      return res.redirect(`/questions/${req.params.id}/answers`);
-    } else {
-      return res.redirect(`/questions/${req.params.id}/answers`);
     }
+    await ans.save();
+    res.json({ answer: ans });
   })
 );
 router.get(
   "/answers/:a_id/downvote",
-  isLoggedIn,
+  // isLoggedIn,
   catchAsync(async (req, res) => {
+    let user;
+    const token = req.query.token;
+    jwt.verify(token, "secret", async (err, decoded) => {
+      if (!err) {
+        user = decoded;
+      } else {
+        console.log(err);
+      }
+    });
+    if (!user) res.status(400).json("No user");
     const ans = await Answer.findById(req.params.a_id);
     let check = true;
     for (vote of ans.votes) {
       console.log(vote);
-      if (vote.user.equals(req.user._id)) {
-        console.log(vote.user.equals(req.user._id));
+      if (vote.user == user.userid) {
         check = false;
-        if (vote.value == 1) {
+        if (vote.value === 1) {
+          console.log("same person");
           ans.upvotes -= 2;
           vote.value = -1;
-          vote.save();
-          ans.save();
         }
       }
     }
     console.log(ans.votes);
     if (check) {
+      console.log("new vote");
       ans.upvotes = ans.upvotes - 1;
       ans.votes.push({
-        user: req.user._id,
+        user: user.userid,
         value: -1,
       });
-      ans.save();
-      return res.redirect(`/questions/${req.params.id}/answers`);
-    } else {
-      return res.redirect(`/questions/${req.params.id}/answers`);
     }
+    await ans.save();
+    res.json({ answer: ans });
   })
 );
 router.get(
@@ -112,8 +127,8 @@ router.get(
         user: user.userid,
         value: 1,
       });
-      ques.save();
     }
+    ques.save();
     res.json({ question: ques });
   })
 );
