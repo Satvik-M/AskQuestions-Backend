@@ -1,3 +1,4 @@
+const { string } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -24,7 +25,7 @@ const QuestionSchema = new mongoose.Schema({
   votes: [
     {
       user: {
-        type: Schema.Types.ObjectId,
+        type: String,
         // ref: "User",
       },
       value: Number,

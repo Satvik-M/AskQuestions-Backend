@@ -75,7 +75,7 @@ router.post(
       const token = jwt.sign({ userid: user._id }, "secret", {
         expiresIn: 36000,
       });
-      return res.json({ user, token, expiresIn: 35000 });
+      return res.json({ user, token, expiresIn: 35000 * 1000 });
     } catch (e) {
       console.log(e);
       // req.flash("error", e.message);
@@ -100,10 +100,11 @@ router.post(
         .json({ message: "No account with the given email id" });
     const check = await bcrypt.compare(data.password, user.password);
     if (!check) return res.status(401).json({ message: "Wrong Password" });
+    console.log(user);
     const token = jwt.sign({ userid: user._id }, "secret", {
       expiresIn: 36000,
     });
-    return res.json({ user, token, expiresIn: 35000 });
+    return res.json({ user, token, expiresIn: 35000 * 1000 });
     // req.flash("success", "Welcome");
     // res.redirect("/questions");
   })

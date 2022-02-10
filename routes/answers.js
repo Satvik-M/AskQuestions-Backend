@@ -62,24 +62,26 @@ router.get(
 
 router.post(
   "/",
-  isLoggedIn,
+  // isLoggedIn,
   catchAsync(async (req, res) => {
     const ques = await Question.findById(req.params.id);
-    if (!ques) req.flash("error", "Question not found");
+    // if (!ques) req.flash("error", "Question not found");
+    if (!ques) res.status(400).json({ message: "Question not found" });
     const ans = new Answer({
       question: ques._id,
       answer: req.body.answer,
-      author: req.user,
+      author: req.body.author,
       upvotes: 0,
       votes: [],
     });
     // console.log(ans);
     ques.answers.push(ans._id);
-    await ans.save();
+    const savedAns = await ans.save();
     await ques.save();
     // console.log(ques);
-    req.flash("success", "Asnwer saved successfully");
-    res.redirect(`/questions/${req.params.id}/answers`);
+    // req.flash("success", "Asnwer saved successfully");
+    // res.redirect(`/questions/${req.params.id}/answers`);
+    res.json(savedAns);
   })
 );
 

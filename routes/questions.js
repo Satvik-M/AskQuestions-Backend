@@ -14,14 +14,6 @@ const {
 const question = require("../models/question");
 
 router.get(
-  "/new",
-  // isLoggedIn,
-  (req, res) => {
-    res.render("questions/home");
-  }
-);
-
-router.get(
   "/:id",
   catchAsync(async (req, res) => {
     const question = await Question.findById(req.params.id);
@@ -38,19 +30,23 @@ router.get(
   })
 );
 // router.post("/", isLoggedIn, validateQuestion, async (req, res) => {
-router.post("/", validateQuestion, async (req, res) => {
-  const ques = new Question({
-    title: req.body.title,
-    description: req.body.description,
-    upvotes: 0,
-    votes: [],
-  });
-  ques.author = req.user;
-  question.author = null;
-  await ques.save();
-  req.flash("success", "Question has been posted successfully");
-  res.redirect("/questions");
-});
+router.post(
+  "/",
+  //  validateQuestion,
+  async (req, res) => {
+    const ques = new Question({
+      title: req.body.title,
+      description: req.body.description,
+      upvotes: 0,
+      votes: [],
+    });
+    ques.author = req.body.author;
+    const savedQuestion = await ques.save();
+    // req.flash("success", "Question has been posted successfully");
+    // res.redirect("/questions");
+    res.json({ message: "Success", question: savedQuestion });
+  }
+);
 router.get(
   "/:id/edit",
   isLoggedIn,
@@ -70,7 +66,7 @@ router.get(
 router.put(
   "/:id",
   isLoggedIn,
-  isQuestionAuthor,
+  (g = isQuestionAuthor),
   validateQuestion,
   catchAsync(async (req, res) => {
     // console.log(req.body);

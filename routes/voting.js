@@ -10,6 +10,8 @@ const {
   isLoggedIn,
   isAnswerAuthor,
 } = require("../middleware");
+const jwt = require("jsonwebtoken");
+const User = require("../models/users");
 
 router.get(
   "/answers/:a_id/upvote",
@@ -78,19 +80,28 @@ router.get(
 );
 router.get(
   "/upvote",
-  isLoggedIn,
+  // isLoggedIn,
   catchAsync(async (req, res) => {
+    let user;
     const ques = await Question.findById(req.params.id);
+    const token = req.query.token;
+    jwt.verify(token, "secret", async (err, decoded) => {
+      if (!err) {
+        user = decoded;
+        console.log(user);
+      } else {
+        console.log(err);
+      }
+    });
     let check = true;
+    // console.log(ques.votes);
     for (vote of ques.votes) {
-      console.log(vote);
-      if (vote.user.equals(req.user._id)) {
+      // console.log(vote);
+      if (vote.user == user.userid) {
         check = false;
-        if (vote.value == -1) {
+        if (vote.value === -1) {
           ques.upvotes += 2;
           vote.value = 1;
-          vote.save();
-          ques.save();
         }
       }
     }
@@ -98,46 +109,52 @@ router.get(
     if (check) {
       ques.upvotes = ques.upvotes + 1;
       ques.votes.push({
-        user: req.user._id,
+        user: user.userid,
         value: 1,
       });
       ques.save();
-      return res.redirect(`/questions/${req.params.id}/answers`);
-    } else {
-      return res.redirect(`/questions/${req.params.id}/answers`);
     }
+    res.json({ question: ques });
   })
 );
 router.get(
   "/downvote",
-  isLoggedIn,
+  // isLoggedIn,
   catchAsync(async (req, res) => {
+    let user;
+    const token = req.query.token;
+    jwt.verify(token, "secret", async (err, decoded) => {
+      if (!err) {
+        user = decoded;
+      } else {
+        console.log(err);
+      }
+    });
+    if (!user) res.status(400).json("No user");
     const ques = await Question.findById(req.params.id);
     let check = true;
     for (vote of ques.votes) {
       console.log(vote);
-      if (vote.user.equals(req.user._id)) {
+      if (vote.user == user.userid) {
         check = false;
-        if (vote.value == 1) {
+        if (vote.value === 1) {
+          console.log("same person");
           ques.upvotes -= 2;
           vote.value = -1;
-          vote.save();
-          ques.save();
         }
       }
     }
     console.log(ques.votes);
     if (check) {
+      console.log("new vote");
       ques.upvotes = ques.upvotes - 1;
       ques.votes.push({
-        user: req.user._id,
+        user: user.userid,
         value: -1,
       });
-      ques.save();
-      return res.redirect(`/questions/${req.params.id}/answers`);
-    } else {
-      return res.redirect(`/questions/${req.params.id}/answers`);
     }
+    await ques.save();
+    res.json({ question: ques });
   })
 );
 
