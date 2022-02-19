@@ -1,9 +1,0 @@
-<% layout('layouts/boilerplate') -%>
-<h6><%= ques.question %> </h6>
-<form action="/questions/<%= ques._id %>/answers" method="POST">
-    <label for="answer">answer : </label>
-    <br>
-    <textarea name="answer" id="answer"></textarea>
-    <br>
-    <button>Submit</button>
-</form>

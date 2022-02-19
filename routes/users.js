@@ -67,19 +67,13 @@ router.post(
       // const verify = `https://aqueous-lake-75452.herokuapp.com/users/activate/${link._id}`;
       // authMail(email, verify);
       console.log(regUser);
-      // req.flash(
-      //   "success",
-      //   "Successfully registered, Please check your mail account for verification mail"
-      // );
-      // res.redirect("/questions");
-      const token = jwt.sign({ userid: user._id }, "secret", {
+
+      const token = jwt.sign({ userid: regUser._id }, "secret", {
         expiresIn: 36000,
       });
-      return res.json({ user, token, expiresIn: 35000 * 1000 });
+      return res.json({ user: regUser, token, expiresIn: 35000 * 1000 });
     } catch (e) {
       console.log(e);
-      // req.flash("error", e.message);
-      // return res.redirect("/users/register");
       res.status(400).json({ message: "Some error occured" });
     }
   })
@@ -105,8 +99,6 @@ router.post(
       expiresIn: 36000,
     });
     return res.json({ user, token, expiresIn: 35000 * 1000 });
-    // req.flash("success", "Welcome");
-    // res.redirect("/questions");
   })
 );
 router.get(
