@@ -25,61 +25,31 @@ router.get(
   "/",
   catchAsync(async (req, res) => {
     const questions = await Question.find().sort({ upvotes: -1 });
-    // res.render("questions/list", { questions });
     res.json(questions);
   })
 );
-// router.post("/", isLoggedIn, validateQuestion, async (req, res) => {
-router.post(
-  "/",
-  //  validateQuestion,
-  async (req, res) => {
-    const ques = new Question({
-      title: req.body.title,
-      description: req.body.description,
-      upvotes: 0,
-      votes: [],
-    });
-    ques.author = req.body.author;
-    const savedQuestion = await ques.save();
-    // req.flash("success", "Question has been posted successfully");
-    // res.redirect("/questions");
-    res.json({ message: "Success", question: savedQuestion });
-  }
-);
-router.get(
-  "/:id/edit",
-  isLoggedIn,
-  isQuestionAuthor,
-  catchAsync(async (req, res) => {
-    const values = await Question.findById(req.params.id).populate({
-      path: "answers",
-      options: { sort: { upvotes: -1 } },
-    });
-    if (!values) {
-      req.flash("error", "Question not found");
-      res.redirect("/questions");
-    }
-    res.render("questions/edit", { values });
-  })
-);
+
+router.post("/", isLoggedIn, validateQuestion, async (req, res) => {
+  const ques = new Question({
+    title: req.body.title,
+    description: req.body.description,
+    upvotes: 0,
+    votes: [],
+  });
+  ques.author = req.user;
+  const savedQuestion = await ques.save();
+  res.json({ message: "Success", question: savedQuestion });
+});
+
 router.put(
   "/:id",
-  // isLoggedIn,
-  //  isQuestionAuthor,
-  // validateQuestion,
+  isLoggedIn,
+  isQuestionAuthor,
+  validateQuestion,
   catchAsync(async (req, res) => {
-    // console.log(req.body);
     const ques = await Question.findByIdAndUpdate(req.params.id, {
       description: req.body.question.description,
     });
-    if (!ques) {
-      // req.flash("error", "Question not found");
-      // res.redirect("/questions");
-      res.status(500).json({ message: "Question not found" });
-    }
-    // req.flash("success", "Modified the question successfully");
-    // res.redirect("/questions");
     res.json({ question: ques });
   })
 );
@@ -89,18 +59,11 @@ router.delete(
   isLoggedIn,
   isQuestionAuthor,
   catchAsync(async (req, res) => {
-    const ques = await Question.findById(req.params.id).populate("answers");
-    if (!ques) {
-      req.flash("error", "Question not found");
-      res.redirect("/questions");
-    }
-    for (q of ques.answers) {
-      // console.log(q._id);
+    for (q of req.ques.answers) {
       await Answer.findByIdAndDelete(q._id);
     }
     await Question.findByIdAndDelete(req.params.id);
-    req.flash("success", "Question has been deleted successfully");
-    res.redirect("/questions");
+    res.json({ message: "Success" });
   })
 );
 

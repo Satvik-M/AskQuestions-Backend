@@ -29,40 +29,10 @@ router.get(
   })
 );
 
-router.get(
-  "/:a_id/edit",
-  isLoggedIn,
-  isAnswerAuthor,
-  catchAsync(async (req, res) => {
-    const values = await Question.findById(req.params.id).populate({
-      path: "answers",
-      options: { sort: { upvotes: -1 } },
-    });
-    const answer = await Answer.findById(req.params.a_id).populate("question");
-    if (!ans) {
-      req.flash("error", "Answer not found");
-      return res.redirect(`/questions/${req.params.id}/answers`);
-    }
-    return res.render("answers/edit", { answer, values });
-  })
-);
-
-router.get(
-  "/new",
-  isLoggedIn,
-  catchAsync(async (req, res) => {
-    const ques = await Question.findById(req.params.id);
-    if (!ques) {
-      req.flash("error", "Question not found");
-      res.redirect("/questions");
-    }
-    res.render("answers/new", { ques });
-  })
-);
-
 router.post(
   "/",
-  // isLoggedIn,
+  isLoggedIn,
+  validateAnswer,
   catchAsync(async (req, res) => {
     const ques = await Question.findById(req.params.id);
     // if (!ques) req.flash("error", "Question not found");
@@ -70,7 +40,7 @@ router.post(
     const ans = new Answer({
       question: ques._id,
       answer: req.body.answer,
-      author: req.body.author,
+      author: req.user,
       upvotes: 0,
       votes: [],
     });
@@ -90,6 +60,7 @@ router.delete(
   isLoggedIn,
   isAnswerAuthor,
   catchAsync(async (req, res) => {
+    console.log("delete");
     const { id, a_id } = req.params;
     await Question.findByIdAndUpdate(id, {
       $pull: {
@@ -97,15 +68,15 @@ router.delete(
       },
     });
     await Answer.findByIdAndDelete(a_id);
-    req.flash("success", "Deleted the answer successfully");
-    res.redirect(`/questions/${id}/answers`);
+    res.json({ message: "Success" });
   })
 );
 
 router.put(
   "/:a_id",
-  // isLoggedIn,
-  // isAnswerAuthor,
+  isLoggedIn,
+  isAnswerAuthor,
+  validateAnswer,
   catchAsync(async (req, res) => {
     const { id, a_id } = req.params;
     const ans = await Answer.findByIdAndUpdate(req.params.a_id, {
