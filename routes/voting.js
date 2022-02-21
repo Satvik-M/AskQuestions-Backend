@@ -1,21 +1,14 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const catchAsync = require("../utils/catchAsync");
-const ExpressError = require("../utils/ExpressError");
 const Answer = require("../models/answers");
 const Question = require("../models/question");
-const {
-  validateAnswer,
-  validateQuestion,
-  isLoggedIn,
-  isAnswerAuthor,
-} = require("../middleware");
+const { isLoggedIn } = require("../middleware");
 const jwt = require("jsonwebtoken");
-const User = require("../models/users");
 
 router.get(
   "/answers/:a_id/upvote",
-  // isLoggedIn,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     let user;
     const token = req.query.token;
@@ -55,7 +48,7 @@ router.get(
 );
 router.get(
   "/answers/:a_id/downvote",
-  // isLoggedIn,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     let user;
     const token = req.query.token;
@@ -95,7 +88,7 @@ router.get(
 );
 router.get(
   "/upvote",
-  // isLoggedIn,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     let user;
     const ques = await Question.findById(req.params.id);
@@ -134,7 +127,7 @@ router.get(
 );
 router.get(
   "/downvote",
-  // isLoggedIn,
+  isLoggedIn,
   catchAsync(async (req, res) => {
     let user;
     const token = req.query.token;

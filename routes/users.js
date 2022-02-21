@@ -9,10 +9,6 @@ const jwt = require("jsonwebtoken");
 // authMail("satvikmakharia@gmail.com");
 const bcrypt = require("bcrypt");
 
-router.get("/register", async (req, res) => {
-  res.render("users/register");
-});
-
 router.get(
   "/activate/:v_id",
   catchAsync(async (req, res) => {
@@ -41,7 +37,7 @@ router.get(
 
 router.post(
   "/register",
-  // validateUser,
+  validateUser,
   catchAsync(async (req, res) => {
     try {
       const { email, username, password } = req.body;
@@ -78,10 +74,6 @@ router.post(
     }
   })
 );
-
-router.get("/login", (req, res) => {
-  res.render("users/login");
-});
 
 router.post(
   "/login",

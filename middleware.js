@@ -63,6 +63,7 @@ module.exports.validateAnswer = (req, res, next) => {
   if (error) {
     // const msg = error.details.map((e) => e.message).join(",");
     // throw new ExpressError(msg, 400);
+    console.log(error);
     res.status(400).json({ message: "verification failed", error });
   } else next();
 };

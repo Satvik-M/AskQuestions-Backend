@@ -6,7 +6,7 @@ module.exports.questionSchema = Joi.object({
 }).required();
 
 module.exports.answerSchema = Joi.object({
-  answer: Joi.object().required(),
+  answer: Joi.string().required(),
 }).required();
 
 module.exports.userSchema = Joi.object({

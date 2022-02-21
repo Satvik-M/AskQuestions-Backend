@@ -1,16 +1,9 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const catchAsync = require("../utils/catchAsync");
-const ExpressError = require("../utils/ExpressError");
-const { questionSchema, answerSchema } = require("../schemas");
 const Question = require("../models/question");
 const Answer = require("../models/answers");
-const {
-  validateAnswer,
-  validateQuestion,
-  isLoggedIn,
-  isAnswerAuthor,
-} = require("../middleware");
+const { validateAnswer, isLoggedIn, isAnswerAuthor } = require("../middleware");
 
 router.get(
   "/",
@@ -40,7 +33,7 @@ router.post(
     const ans = new Answer({
       question: ques._id,
       answer: req.body.answer,
-      author: req.user,
+      author: req.user._id,
       upvotes: 0,
       votes: [],
     });
@@ -80,9 +73,8 @@ router.put(
   catchAsync(async (req, res) => {
     const { id, a_id } = req.params;
     const ans = await Answer.findByIdAndUpdate(req.params.a_id, {
-      answer: req.body.answer.answer,
+      answer: req.body.answer,
     });
-    req.flash("success", "Modified answer successfully");
     res.json({ answer: ans });
     // res.redirect(`/questions/${id}/answers`);
   })

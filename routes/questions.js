@@ -3,15 +3,11 @@ const router = express.Router();
 const Question = require("../models/question");
 const Answer = require("../models/answers");
 const catchAsync = require("../utils/catchAsync");
-const ExpressError = require("../utils/ExpressError");
-const { questionSchema, answerSchema } = require("../schemas");
 const {
-  validateAnswer,
   validateQuestion,
   isLoggedIn,
   isQuestionAuthor,
 } = require("../middleware");
-const question = require("../models/question");
 
 router.get(
   "/:id",
@@ -48,7 +44,7 @@ router.put(
   validateQuestion,
   catchAsync(async (req, res) => {
     const ques = await Question.findByIdAndUpdate(req.params.id, {
-      description: req.body.question.description,
+      description: req.body.description,
     });
     res.json({ question: ques });
   })
