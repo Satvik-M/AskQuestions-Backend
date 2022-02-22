@@ -1,28 +1,27 @@
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.sendGrid);
 
-const client = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
-  port: 587,
-  secure: false,
-  auth: {
-    user: "apikey",
-    pass: process.env.sendGrid,
-  },
-});
-const email = (module.exports.authMail = (mail_id, verify) =>
-  client.sendMail(
-    {
-      from: "satvikmakharia@gmail.com",
-      to: `${mail_id}`,
-      subject: "Please confirm your mail account",
-      text: `Please click on the link given below in order to confirm your mail account...${verify}`,
-      html: `<b>Please click on the link given below in order to confirm your mail account...</b><a href=${verify} target='_blank'>Verify</a>`,
+const templateId = {
+  confirmEmail: "d-d0e7c98d43aa4ebaaf13efba5288683f",
+  resetPassword: "d-67943bd6b17541339fd44bbc64cdbc63",
+};
+
+module.exports.authMail = (mail_id, verify) => {
+  const msg = {
+    from: "satvikmakharia@gmail.com",
+    to: `${mail_id}`,
+    templateId: templateId.confirmEmail,
+    dynamic_template_data: {
+      link: verify,
     },
-    function (err, info) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Message sent: " + info.response);
-      }
-    }
-  ));
+  };
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email send!");
+      console.log(msg);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};

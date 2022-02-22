@@ -8,30 +8,31 @@ const { authMail } = require("../mail");
 const jwt = require("jsonwebtoken");
 // authMail("satvikmakharia@gmail.com");
 const bcrypt = require("bcrypt");
+const ResetPassword = require("../models/resetPassword");
 
 router.get(
   "/activate/:v_id",
   catchAsync(async (req, res) => {
     const link = await UserVerification.findById(req.params.v_id);
     if (!link) {
-      req.flash(
-        "error",
-        "Sorry, some error occured. Either you have already verified or your token has expired. Please register again for latter."
-      );
+      res.status(400).json({
+        message:
+          "Sorry, some error occured. Either you have already verified or your token has expired. Please register again for latter.",
+      });
     } else {
       let diff = Date.now() - link.time;
       diff = diff / (1000 * 60 * 60);
       console.log(diff);
       if (diff <= 24) {
-        req.flash("success", "Account verified successfully");
         await User.findByIdAndUpdate(link.user, { isVerified: true });
         await UserVerification.findByIdAndDelete(req.params.v_id);
+        res.json({ message: "Account verified successfully" });
       } else {
-        req.flash("error", "Token has expired. Please register again");
-        return res.redirect("/users/register");
+        res
+          .status(400)
+          .json({ message: "Token has expired. Please register again" });
       }
     }
-    res.redirect("/users/login");
   })
 );
 
@@ -57,11 +58,15 @@ router.post(
         isVerified: false,
       });
       const regUser = await newUser.save();
-      // const link = new UserVerification({ user: user._id, time: Date.now() });
-      // await link.save();
+      const link = new UserVerification({
+        user: regUser._id,
+        time: Date.now(),
+      });
+      await link.save();
       // change the link to your own after hosting the site
       // const verify = `https://aqueous-lake-75452.herokuapp.com/users/activate/${link._id}`;
-      // authMail(email, verify);
+      const verify = `http://localhost:4200/activate/${link._id}`;
+      authMail(email, verify);
       console.log(regUser);
 
       const token = jwt.sign({ userid: regUser._id }, "secret", {
